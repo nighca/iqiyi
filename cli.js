@@ -5,6 +5,7 @@ var path = require('path');
 var program = require('commander');
 
 var cli = require('./lib/node-cli');
+var pkg = require("./package.json");
 var myCli = {
     succ: function(){
         cli.color('green');
@@ -54,8 +55,6 @@ var myCli = {
 var trunkFolder = '__trunk__';
 var trunkName = 'trunk';
 var branchFolder = '__branch__';
-
-var args = process.argv.slice(2);
 
 var config = function(cfg){
     var pkg = require(__dirname+"/package.json");
@@ -281,7 +280,7 @@ var branchAction = function(){
     process.exit();
 };
 
-program.version('0.0.1');
+program.version(pkg.version);
 
 var cmds = [
     {
