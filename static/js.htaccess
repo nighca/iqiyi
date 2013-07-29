@@ -1,0 +1,12 @@
+RewriteEngine on
+
+RewriteCond %{HTTP_HOST} static.qiyi.com
+RewriteRule .* http://static.qiyi.com/__trunk__/$0 [P]
+
+
+RewriteCond %{HTTP_HOST} static.iqiyi.com
+RewriteRule .* http://static.iqiyi.com/__trunk__/$0 [P]
+
+
+RewriteCond %{HTTP_HOST} static.qiyipic.com
+RewriteRule .* http://static.qiyipic.com/__trunk__/$0 [P]

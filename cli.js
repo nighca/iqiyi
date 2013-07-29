@@ -4,8 +4,9 @@ var fs = require('fs');
 var path = require('path');
 var program = require('commander');
 
-var cli = require('./lib/node-cli');
 var pkg = require("./package.json");
+
+var cli = require('./lib/node-cli');
 var myCli = {
     succ: function(){
         cli.color('green');
@@ -52,19 +53,54 @@ var myCli = {
     }
 };
 
+var terminate = function(){
+    process.exit();
+};
+
 var trunkFolder = '__trunk__';
 var trunkName = 'trunk';
 var branchFolder = '__branch__';
 
+var staticPath = 'static';
+var configFileName = '.htaccess';
+var rootHtaccess = path.join(staticPath, 'root' + configFileName);
+var jsHtaccess = path.join(staticPath, 'js' + configFileName);
+var branchHtaccess = path.join(staticPath, 'branch' + configFileName);
+
 var config = function(cfg){
-    var pkg = require(__dirname+"/package.json");
-    pkg.config = pkg.config || {};
+    var commonConfigFolder = path.join(process.env['HOME'], '.config');
+    if(!fs.existsSync(commonConfigFolder)){
+        fs.mkdirSync(commonConfigFolder);
+    }
+    var configFolder = path.join(commonConfigFolder, pkg.name);
+    if(!fs.existsSync(configFolder)){
+        fs.mkdirSync(configFolder);
+    }
+    var configFile = path.join(configFolder, 'config.json');
+    if(!fs.existsSync(configFile)){
+        fs.writeFileSync(configFile, '{}');
+    }
+    var config = JSON.parse(fs.readFileSync(configFile, {encoding:'utf8'}));
 
     if(cfg){
-        pkg.config.iqiyi = cfg;
-        fs.writeFileSync(__dirname+"/package.json", JSON.stringify(pkg, null, 2));
+        config = cfg;
+        fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
     }
-    return pkg.config.iqiyi;
+    return config;
+};
+
+var noRootFault = function(){
+    myCli
+        .begin()
+        .write('Please init a dev folder using')
+        .tell('`iqiyi init [root]`')
+        .end();
+    myCli
+        .begin()
+        .write('Or set the path of your dev folder using')
+        .tell('`iqiyi use [root]`')
+        .end();
+
 };
 
 var getBranchList = function(root){
@@ -75,34 +111,16 @@ var getBranchList = function(root){
 
 var checkoutRewriteRule = function(root, branch){
     var ruleFile = path.join(root, 'js', '.htaccess');
-    var rules = [
-        'RewriteEngine on',
-        '',
-        'RewriteCond %{HTTP_HOST} static.qiyi.com',
-        'RewriteRule .* http://static.qiyi.com/' + branch + '/$0 [P]',
-        '',
-        '',
-        'RewriteCond %{HTTP_HOST} static.iqiyi.com',
-        'RewriteRule .* http://static.iqiyi.com/' + branch + '/$0 [P]',
-        '',
-        '',
-        'RewriteCond %{HTTP_HOST} static.qiyipic.com',
-        'RewriteRule .* http://static.qiyipic.com/' + branch + '/$0 [P]'
-    ];
+    var jsHtaccessCnt = fs.readFileSync(jsHtaccess, {encoding:'utf8'});
 
-    fs.writeFileSync(ruleFile, rules.join('\n'));
+    fs.writeFileSync(ruleFile, jsHtaccessCnt.replace(/__trunk__/g, branch));
 };
 
 var addLocalRewriteRule = function(root, branch){
     var ruleFile = path.join(root, branch, '.htaccess');
-    var rules = [
-        'RewriteEngine on',
-        'RewriteCond %{REQUEST_FILENAME} !-f',
-        'RewriteCond %{REQUEST_FILENAME} !-d',
-        'RewriteRule ^(.*)$ http://202.108.14.56/js/$0 [P]'
-    ];
+    var branchHtaccessCnt = fs.readFileSync(branchHtaccess, {encoding:'utf8'});
 
-    fs.writeFileSync(ruleFile, rules.join('\n'));
+    fs.writeFileSync(ruleFile, branchHtaccessCnt);
 };
 
 var checkout = function(branch){
@@ -118,8 +136,8 @@ var checkout = function(branch){
     addLocalRewriteRule(root, branch);
 };
 
-var rootAction = function(root){
-    var svRoot = function(root){
+var useAction = function(root){
+    var doUse = function(root){
         root = path.resolve(process.cwd(), root);
         try{
             config({
@@ -127,42 +145,149 @@ var rootAction = function(root){
             });
             myCli
                 .begin()
-                .write('Finished.')
+                .write('Set root finished.')
                 .end();
             myCli
                 .begin()
                 .write('Current root:')
-                .succ(root).end();
+                .tell(root)
+                .end();
         }catch(e){
             myCli
                 .begin()
-                .write('Failed.')
+                .write('Failed to set root.')
                 .end();
             myCli
                 .begin()
-                .fail(e).end();
+                .fail(e)
+                .end();
         }
-        process.exit();
+        terminate();
     };
 
-    var promptSvRoot = function(){
+    var promptRoot = function(){
         myCli
             .begin()
             .tell('Input the path of dev folder:')
             .end();
         program.prompt('    ', function(root){
             if(!root){
-                promptSvRoot();
+                promptRoot();
             }else{
-                svRoot(root);
+                doUse(root);
             }
         });
     };
 
     if(root){
-        svRoot(root);
+        doUse(root);
     }else{
-        promptSvRoot();
+        promptRoot();
+    }
+};
+
+var initAction = function(root){
+    var initFiles = function(root){
+        var dirs = [
+            'js',
+            'css',
+            trunkFolder,
+            branchFolder,
+            'proj'
+        ];
+        
+        for (var i = dirs.length - 1; i >= 0; i--) {
+            fs.mkdirSync(path.join(root, dirs[i]));
+        };
+        
+        var rootHtaccessCnt = fs.readFileSync(rootHtaccess, {encoding:'utf8'});
+        var jsHtaccessCnt = fs.readFileSync(jsHtaccess, {encoding:'utf8'});
+        var branchHtaccessCnt = fs.readFileSync(branchHtaccess, {encoding:'utf8'});
+        fs.writeFileSync(path.join(root, '.htaccess'), rootHtaccessCnt);
+        fs.writeFileSync(path.join(root, 'js', '.htaccess'), jsHtaccessCnt);
+        fs.writeFileSync(path.join(root, trunkFolder, '.htaccess'), branchHtaccessCnt);
+    };
+    var doInit = function(root){
+        root = path.resolve(process.cwd(), root);
+        if(!fs.existsSync(root)){
+            myCli
+                .begin()
+                .write('Failed to init.')
+                .end();
+            myCli
+                .begin()
+                .fail('The path:')
+                .fail(root)
+                .fail('does not exist!')
+                .end();
+            terminate();
+        }
+        try{
+            config({
+                root: root
+            });
+            myCli
+                .begin()
+                .write('Root path Saved.')
+                .end();
+            myCli
+                .begin()
+                .write('Current root:')
+                .tell(root)
+                .end();
+        }catch(e){
+            myCli
+                .begin()
+                .write('Failed to save root.')
+                .end();
+            myCli
+                .begin()
+                .fail(e)
+                .end();
+            terminate();
+        }
+        try{
+            initFiles(root);
+            myCli
+                .begin()
+                .write('Files init finished.')
+                .end();
+            myCli
+                .begin()
+                .write('Folder path:')
+                .tell(root)
+                .end();
+        }catch(e){
+            myCli
+                .begin()
+                .write('Failed to init files.')
+                .end();
+            myCli
+                .begin()
+                .fail(e)
+                .end();
+            terminate();
+        }
+    };
+
+    var promptRoot = function(){
+        myCli
+            .begin()
+            .tell('Input the path of folder to init:')
+            .end();
+        program.prompt('    ', function(root){
+            if(!root){
+                promptRoot();
+            }else{
+                doInit(root);
+            }
+        });
+    };
+
+    if(root){
+        doInit(root);
+    }else{
+        promptRoot();
     }
 };
 
@@ -171,10 +296,10 @@ var checkoutAction = function(branch){
     if(!root){
         myCli
             .begin()
-            .fail('Failed.')
+            .fail('Failed to checkout.')
             .write('Please set the dev path first using')
             .write('`iqiyi root [root]`').end();
-        process.exit();
+        terminate();
     }
     var branchList = getBranchList(root);
 
@@ -192,22 +317,23 @@ var checkoutAction = function(branch){
             checkout(branch);
             myCli
                 .begin()
-                .write('Finished.')
+                .write('Checkout finished.')
                 .end();
             myCli
                 .begin()
                 .write('Current branch:')
-                .succ(branch).end();
+                .tell(branch)
+                .end();
         }catch(e){
             myCli
                 .begin()
-                .write('Failed.')
+                .write('Failed to checkout.')
                 .end();
             myCli
                 .begin()
                 .fail(e).end();
         }
-        process.exit();
+        terminate();
     };
 
     var promptCheckout = function(){
@@ -251,42 +377,76 @@ var branchAction = function(){
     if(!root){
         myCli
             .begin()
-            .fail('Failed.')
-            .write('Please set the dev path first using')
-            .write('`iqiyi root [root]`').end();
-        process.exit();
+            .fail('Failed to list branches.')
+            .end();
+        noRootFault();
+        terminate();
     }
     var branchList = getBranchList(root);
     branchList.unshift(trunkName);
 
     var currBranch = getCurrBranch(root);
 
+    myCli
+        .begin()
+        .tell('All branches:')
+        .end();
     for (var i = 0, l = branchList.length, branch; i < l; i++) {
         branch = branchList[i];
         if(branch == currBranch){
             myCli
                 .begin()
-                .succ(i+1)
-                .succ('CURRENT')
-                .succ(branchList[i]).end();
+                .tell(i+1)
+                .tell('[CURRENT]')
+                .tell(branchList[i]).end();
         }else{
             myCli
                 .begin()
                 .write(i+1)
-                .write('       ')
+                .write('         ')
                 .write(branchList[i]).end();
         }
     };
-    process.exit();
+    terminate();
+};
+
+var statusAction = function(){
+    var root = config().root;
+    if(!root){
+        myCli
+            .begin()
+            .fail('Failed to get status.')
+            .end();
+        noRootFault();
+        terminate();
+    }
+
+    myCli
+        .begin()
+        .write('Root:')
+        .tell(root)
+        .end();
+
+    var currBranch = getCurrBranch(root);
+    myCli
+        .begin()
+        .write('Current branch:')
+        .tell(currBranch)
+        .end();
 };
 
 program.version(pkg.version);
 
 var cmds = [
     {
-        command: 'root [root]',
-        description: 'set the path of dev folder',
-        action: rootAction
+        command: 'use [root]',
+        description: 'use folder which already occurs',
+        action: useAction
+    },
+    {
+        command: 'init [root]',
+        description: 'give a path & init it',
+        action: initAction
     },
     {
         command: 'checkout [branch]',
@@ -297,6 +457,11 @@ var cmds = [
         command: 'branch',
         description: 'show all branches',
         action: branchAction
+    },
+    {
+        command: 'status',
+        description: 'show status',
+        action: statusAction
     }
 ];
 
@@ -309,3 +474,4 @@ for (var i = cmds.length - 1, cmd; i >= 0; i--) {
 };
 
 program.parse(process.argv);
+
