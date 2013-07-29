@@ -439,14 +439,14 @@ program.version(pkg.version);
 
 var cmds = [
     {
-        command: 'use [root]',
-        description: 'use folder which already occurs',
-        action: useAction
-    },
-    {
         command: 'init [root]',
         description: 'give a path & init it',
         action: initAction
+    },
+    {
+        command: 'use [root]',
+        description: 'use folder which already occurs',
+        action: useAction
     },
     {
         command: 'checkout [branch]',
@@ -465,7 +465,7 @@ var cmds = [
     }
 ];
 
-for (var i = cmds.length - 1, cmd; i >= 0; i--) {
+for (var i = 0, l = cmds.length, cmd; i < l; i++) {
     cmd = cmds[i];
     program
         .command(cmd.command)
