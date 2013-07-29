@@ -1,4 +1,7 @@
-#Iqiyi Front-end Dev Command Line Interface Tool
+#Iqiyi Front-end Dev Tool
 
 #Usage
-`npm install -g iqiyi`
+
+	$ npm install -g iqiyi
+
+	$ iqiyi -h
