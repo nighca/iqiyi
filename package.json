@@ -1,0 +1,25 @@
+{
+  "description": "A CLI Tool for Front-end Develop in Iqiyi",
+  "license": "BSD",
+  "dependencies": {
+    "commander": "1.3.2"
+  },
+  "author": "nighca",
+  "main": "index.js",
+  "bin": {
+    "iqiyi": "./cli.js"
+  },
+  "name": "iqiyi",
+  "keywords": [
+    "iqiyi",
+    "front-end",
+    "cli"
+  ],
+  "version": "0.0.1",
+  "repository": "",
+  "config": {
+    "iqiyi": {
+      "root": "/home/nighca/code/qiyi"
+    }
+  }
+}
