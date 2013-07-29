@@ -24,6 +24,12 @@ var myCli = {
         cli.reset();
         return this;
     },
+    begin: function(){
+        cli.color('blue');
+        this.write('>>>');
+        cli.reset();
+        return this;
+    },
     end: function(){
         cli.write('\n');
         return this;
@@ -45,6 +51,10 @@ var myCli = {
     }
 };
 
+var trunkFolder = '__trunk__';
+var trunkName = 'trunk';
+var branchFolder = '__branch__';
+
 var args = process.argv.slice(2);
 
 var config = function(cfg){
@@ -59,7 +69,7 @@ var config = function(cfg){
 };
 
 var getBranchList = function(root){
-    var branchPath = path.join(root, '__branch__');
+    var branchPath = path.join(root, branchFolder);
     var branchList = fs.readdirSync(branchPath);
     return branchList;
 };
@@ -99,10 +109,10 @@ var addLocalRewriteRule = function(root, branch){
 var checkout = function(branch){
     var root = config().root;
 
-    if(branch.trim() === 'trunk'){
-        branch = '__trunk__';
+    if(branch.trim() === trunkName){
+        branch = trunkFolder;
     }else{
-        branch = '__branch__/' + branch;
+        branch = path.join(branchFolder, branch);
     }
 
     checkoutRewriteRule(root, branch);
@@ -111,25 +121,37 @@ var checkout = function(branch){
 
 var rootAction = function(root){
     var svRoot = function(root){
-        root = path.resolve(__dirname, root);
+        root = path.resolve(process.cwd(), root);
         try{
             config({
                 root: root
             });
             myCli
+                .begin()
                 .write('Finished.')
+                .end();
+            myCli
+                .begin()
                 .write('Current root:')
                 .succ(root).end();
         }catch(e){
             myCli
+                .begin()
                 .write('Failed.')
+                .end();
+            myCli
+                .begin()
                 .fail(e).end();
         }
         process.exit();
     };
 
     var promptSvRoot = function(){
-        program.prompt('Input the path of dev folder: ', function(root){
+        myCli
+            .begin()
+            .tell('Input the path of dev folder:')
+            .end();
+        program.prompt('    ', function(root){
             if(!root){
                 promptSvRoot();
             }else{
@@ -149,41 +171,114 @@ var checkoutAction = function(branch){
     var root = config().root;
     if(!root){
         myCli
+            .begin()
             .fail('Failed.')
             .write('Please set the dev path first using')
             .write('`iqiyi root [root]`').end();
         process.exit();
     }
+    var branchList = getBranchList(root);
+
+    var isValidBranch = function(branch){
+        for (var i = branchList.length - 1; i >= 0; i--) {
+            if(branchList[i].trim() == branch.trim()){
+                return true;
+            }
+        };
+        return false;
+    };
 
     var doCheckout = function(branch){
         try{
             checkout(branch);
             myCli
+                .begin()
                 .write('Finished.')
+                .end();
+            myCli
+                .begin()
                 .write('Current branch:')
                 .succ(branch).end();
         }catch(e){
             myCli
+                .begin()
                 .write('Failed.')
+                .end();
+            myCli
+                .begin()
                 .fail(e).end();
         }
         process.exit();
     };
 
     var promptCheckout = function(){
-        var branchList = getBranchList(root);
-        branchList.unshift('trunk');
-        myCli.tell('Choose a branch to checkout to:').end();
+        branchList.unshift(trunkName);
+        myCli
+            .begin()
+            .tell('Choose a branch to checkout to:').end();
         program.choose(branchList, function(i){
             doCheckout(branchList[i]);
         });
     };
 
-    if(branch){
+    if(branch && isValidBranch(branch)){
         doCheckout(branch);
     }else{
         promptCheckout();
     }
+};
+
+var getCurrBranch = function(root){
+    var ruleFile = path.join(root, 'js', '.htaccess');
+    var ruleCnt = fs.readFileSync(ruleFile, {
+        encoding: 'utf8'
+    });
+
+    var pattern = /RewriteRule\s\.\*\s\w+\:\/\/[\w\.]+\/([\w\/]+)\/\$0\s\[P\]/;
+    var branch = pattern.test(ruleCnt) && pattern.exec(ruleCnt)[1];
+    if(branch){
+        if(branch == trunkFolder){
+            branch = trunkName;
+        }else if(branch.indexOf(branchFolder) === 0){
+            branch = branch.slice(branchFolder.length + 1);
+        }
+    }
+
+    return branch;
+};
+
+var branchAction = function(){
+    var root = config().root;
+    if(!root){
+        myCli
+            .begin()
+            .fail('Failed.')
+            .write('Please set the dev path first using')
+            .write('`iqiyi root [root]`').end();
+        process.exit();
+    }
+    var branchList = getBranchList(root);
+    branchList.unshift(trunkName);
+
+    var currBranch = getCurrBranch(root);
+
+    for (var i = 0, l = branchList.length, branch; i < l; i++) {
+        branch = branchList[i];
+        if(branch == currBranch){
+            myCli
+                .begin()
+                .succ(i+1)
+                .succ('CURRENT')
+                .succ(branchList[i]).end();
+        }else{
+            myCli
+                .begin()
+                .write(i+1)
+                .write('       ')
+                .write(branchList[i]).end();
+        }
+    };
+    process.exit();
 };
 
 program.version('0.0.1');
@@ -198,6 +293,11 @@ var cmds = [
         command: 'checkout [branch]',
         description: 'checkout to a branch',
         action: checkoutAction
+    },
+    {
+        command: 'branch',
+        description: 'show all branches',
+        action: branchAction
     }
 ];
 
