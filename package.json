@@ -16,10 +16,13 @@
     "cli"
   ],
   "version": "0.0.1",
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/isaacs/npm.git"
+  },
   "config": {
     "iqiyi": {
-      "root": "/home/nighca/code/qiyi"
+      "root": ""
     }
   }
 }

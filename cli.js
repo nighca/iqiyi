@@ -108,8 +108,8 @@ var checkout = function(branch){
 };
 
 var rootAction = function(root){
-    root = path.resolve(__dirname, root);
     var svRoot = function(root){
+        root = path.resolve(__dirname, root);
         try{
             config({
                 root: root
@@ -144,6 +144,15 @@ var rootAction = function(root){
 };
 
 var checkoutAction = function(branch){
+    var root = config().root;
+    if(!root){
+        myCli
+            .fail('Failed.')
+            .write('Please set the dev path first using')
+            .write('`iqiyi root [root]`').end();
+        process.exit();
+    }
+
     var doCheckout = function(branch){
         try{
             checkout(branch);
@@ -159,7 +168,6 @@ var checkoutAction = function(branch){
         process.exit();
     };
 
-    var root = config().root;
     var promptCheckout = function(){
         var branchList = getBranchList(root);
         branchList.unshift('trunk');
