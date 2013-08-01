@@ -61,7 +61,7 @@ var trunkFolder = '__trunk__';
 var trunkName = 'trunk';
 var branchFolder = '__branch__';
 
-var staticPath = 'static';
+var staticPath = path.join(__dirname, 'static');
 var configFileName = '.htaccess';
 var rootHtaccess = path.join(staticPath, 'root' + configFileName);
 var jsHtaccess = path.join(staticPath, 'js' + configFileName);
@@ -297,8 +297,8 @@ var checkoutAction = function(branch){
         myCli
             .begin()
             .fail('Failed to checkout.')
-            .write('Please set the dev path first using')
-            .write('`iqiyi root [root]`').end();
+            .end();
+        noRootFault();
         terminate();
     }
     var branchList = getBranchList(root);
