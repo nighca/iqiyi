@@ -1,8 +1,21 @@
 #!/usr/bin/env node
 
+var completion = require('./lib/completion');
 var program = require('commander');
-
 var config = require('./kit/config');
+
+var kit = require('./kit');
+var pathname = require('./kit/pathname');
+
+var completion = require('./kit/cmd').completion(
+    ['init', 'use', 'checkout', 'branch', 'status'],
+    ['h', 'V'],
+    ['help', 'version']
+);
+
+if(completion){
+    return completion;
+}
 
 program.version(config().pkg.version);
 
@@ -27,11 +40,11 @@ var cmds = [
         description: 'show all branches',
         action: require('./action/branch')
     },
-    {
+    /*{
         command: 'goto',
         description: 'goto the working directory',
         action: require('./action/goto')
-    },
+    },*/
     {
         command: 'status',
         description: 'show status',

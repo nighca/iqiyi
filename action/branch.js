@@ -14,7 +14,6 @@ var action = function(){
         kit.terminate();
     }
     var branchList = kit.getBranchList(root);
-    branchList.unshift(pathname.trunkName);
 
     var currBranch = kit.getCurrBranch(root);
 
