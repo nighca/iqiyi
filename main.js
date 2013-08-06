@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 
-var completion = require('./lib/completion');
 var program = require('commander');
 var config = require('./kit/config');
-
-var kit = require('./kit');
-var pathname = require('./kit/pathname');
 
 var completion = require('./kit/cmd').completion(
     ['init', 'use', 'checkout', 'branch', 'status'],
