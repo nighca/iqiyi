@@ -4,4 +4,6 @@
 
 	$ npm install -g iqiyi
 
+	$ iqiyi completion install
+
 	$ iqiyi -h

@@ -53,13 +53,15 @@ var mkDir = exports.mkDir = function(path, cnt){
 
 exports.getBranchList = function(root){
     var branchList = readDir(pathname.branchPath);
+    branchList.unshift(pathname.trunkName);
+    
     return branchList;
 };
 
 exports.getCurrBranch = function(root){
     var ruleCnt = readFile(pathname.ruleFile);
 
-    var pattern = /RewriteRule\s\.\*\s\w+\:\/\/[\w\.]+\/([\w\/]+)\/\$0\s\[P\]/;
+    var pattern = /RewriteRule\s\.\*\s\w+\:\/\/[\w\.]+\/([\w\/\-]+)\/\$0\s\[P\]/;
     var branch = pattern.test(ruleCnt) && pattern.exec(ruleCnt)[1];
     if(branch){
         if(branch == pathname.trunkFolder){
