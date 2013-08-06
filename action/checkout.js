@@ -68,7 +68,6 @@ var action = function(branch){
     };
 
     var promptCheckout = function(){
-        branchList.unshift(pathname.trunkName);
         myCli
             .begin()
             .tell('Choose a branch to checkout to:').end();
