@@ -1,4 +1,4 @@
-#Iqiyi Front-end Dev Tool
+#Iqiyi Front-end-dev CLI Tool
 
 #Usage
 
