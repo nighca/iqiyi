@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 
 var pathname = require('./pathname');
 var output = require('./output');
@@ -58,7 +59,7 @@ exports.getBranchList = function(root){
     return branchList;
 };
 
-exports.getCurrBranch = function(root){
+var getCurrBranch = function(root){
     var ruleCnt = readFile(pathname.ruleFile);
 
     var pattern = /RewriteRule\s\.\*\s\w+\:\/\/[\w\.]+\/([\w\/\-]+)\/\$0\s\[P\]/;
@@ -73,3 +74,13 @@ exports.getCurrBranch = function(root){
 
     return branch;
 };
+
+var getWorkingDirectory = function(root){
+    var currBranch = getCurrBranch(root);
+    return currBranch === pathname.trunkName ?
+        path.join(root, pathname.trunkFolder, pathname.projectFolder) :
+        path.join(root, pathname.branchFolder, currBranch, pathname.projectFolder);
+};
+
+exports.getCurrBranch = getCurrBranch;
+exports.getWorkingDirectory = getWorkingDirectory;
