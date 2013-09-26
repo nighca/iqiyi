@@ -42,6 +42,11 @@ var cmds = [
         action: require('./action/goto')
     },*/
     {
+        command: 'exec',
+        description: 'exec command @cwd',
+        action: require('./action/exec')
+    },
+    {
         command: 'update',
         description: 'update current branch',
         action: require('./action/update')
