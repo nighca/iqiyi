@@ -1,8 +1,6 @@
 var exec = require('child_process').exec;
-var path = require('path');
 
 var myCli = require('../kit/cli');
-var pathname = require('../kit/pathname');
 var config = require('../kit/config')();
 var kit = require('../kit');
 
