@@ -16,8 +16,8 @@ var action = function(){
     }
 
     var workingDirectory = kit.getWorkingDirectory(root);
-    var cmd = 'svn update';
-    exec(cmd, {cwd: workingDirectory}, function (error, stdout, stderr) {
+    var cmdArr = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+    exec(cmdArr.join(' '), {cwd: workingDirectory}, function (error, stdout, stderr) {
         myCli
             .begin()
             .write('Output:')
