@@ -1,12 +1,14 @@
 var path = require('path');
 
-var config = require('./config');
+var config = require('./config')();
 
-var root = config().root;
+var root = config.root;
 
 var trunkFolder = '__trunk__';
 var trunkName = 'trunk';
 var branchFolder = '__branch__';
+
+var projectFolder = config.project || 'qiyiV2';
 
 var branchPath = path.join(root, branchFolder);
 
@@ -23,6 +25,7 @@ exports.root = root;
 exports.trunkFolder = trunkFolder;
 exports.trunkName = trunkName;
 exports.branchFolder = branchFolder;
+exports.projectFolder = projectFolder;
 
 exports.branchPath = branchPath;
 

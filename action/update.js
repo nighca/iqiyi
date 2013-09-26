@@ -1,45 +1,35 @@
-var myCli = require('../kit/cli');
-var config = require('../kit/config');
-var kit = require('../kit');
 var exec = require('child_process').exec;
+var path = require('path');
+
+var myCli = require('../kit/cli');
+var pathname = require('../kit/pathname');
+var config = require('../kit/config')();
+var kit = require('../kit');
 
 var action = function(){
-    var root = config().root;
+    var root = config.root;
     if(!root){
         myCli
             .begin()
-            .fail('Failed to get status.')
+            .fail('Failed to checkout directory.')
             .end();
         output.noRootFault();
         kit.terminate();
     }
 
-    myCli
-        .begin()
-        .write('Root:')
-        .tell(root)
-        .end();
-
-    var currBranch = kit.getCurrBranch(root);
-    myCli
-        .begin()
-        .write('Current branch:')
-        .tell(currBranch)
-        .end();
-
     var workingDirectory = kit.getWorkingDirectory(root);
-    var cmd = 'svn status';
+    var cmd = 'svn update';
     exec(cmd, {cwd: workingDirectory}, function (error, stdout, stderr) {
         myCli
             .begin()
-            .write('Current branch status:')
+            .write('Output:')
             .end();
         myCli.print(stdout);
 
         if(error){
             myCli
                 .begin()
-                .fail('Current branch status failed:')
+                .fail('Err:')
                 .end();
             myCli.print(stderr);
         }

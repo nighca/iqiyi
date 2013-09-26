@@ -4,7 +4,7 @@ var program = require('commander');
 var config = require('./kit/config');
 
 var completion = require('./kit/cmd').completion(
-    ['init', 'use', 'checkout', 'branch', 'status'],
+    ['init', 'use', 'checkout', 'branch', 'status', 'update'],
     ['h', 'V'],
     ['help', 'version']
 );
@@ -41,6 +41,11 @@ var cmds = [
         description: 'goto the working directory',
         action: require('./action/goto')
     },*/
+    {
+        command: 'update',
+        description: 'update current branch',
+        action: require('./action/update')
+    },
     {
         command: 'status',
         description: 'show status',
