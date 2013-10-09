@@ -4,6 +4,7 @@ var fs = require('fs');
 var myCli = require('../kit/cli');
 var pathname = require('../kit/pathname');
 var config = require('../kit/config');
+var fsplus = require('../kit/fsplus');
 var kit = require('../kit');
 
 var action = function(root){
@@ -18,18 +19,18 @@ var action = function(root){
         
         for (var i = dirs.length - 1; i >= 0; i--) {
             dir = path.join(root, dirs[i]);
-            !fs.existsSync(dir) && kit.mkDir(dir);
+            !fs.existsSync(dir) && fsplus.mkDir(dir);
         };
         
-        var rootHtaccessCnt = kit.readFile(pathname.rootHtaccess);
-        var jsHtaccessCnt = kit.readFile(pathname.jsHtaccess);
-        var branchHtaccessCnt = kit.readFile(pathname.branchHtaccess);
+        var rootHtaccessCnt = fsplus.readFile(pathname.rootHtaccess);
+        var jsHtaccessCnt = fsplus.readFile(pathname.jsHtaccess);
+        var branchHtaccessCnt = fsplus.readFile(pathname.branchHtaccess);
         var rootHtaccessPath = path.join(root, '.htaccess');
         var jsHtaccessPath = path.join(root, 'js', '.htaccess');
         var branchHtaccessPath = path.join(root, pathname.trunkFolder, '.htaccess');
-        !fs.existsSync(rootHtaccessPath) && kit.writeFile(rootHtaccessPath, rootHtaccessCnt);
-        !fs.existsSync(jsHtaccessPath) && kit.writeFile(jsHtaccessPath, jsHtaccessCnt);
-        !fs.existsSync(branchHtaccessPath) && kit.writeFile(branchHtaccessPath, branchHtaccessCnt);
+        !fs.existsSync(rootHtaccessPath) && fsplus.writeFile(rootHtaccessPath, rootHtaccessCnt);
+        !fs.existsSync(jsHtaccessPath) && fsplus.writeFile(jsHtaccessPath, jsHtaccessCnt);
+        !fs.existsSync(branchHtaccessPath) && fsplus.writeFile(branchHtaccessPath, branchHtaccessCnt);
     };
     var doInit = function(root){
         var program = this;

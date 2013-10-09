@@ -15,7 +15,7 @@
         "front-end",
         "cli"
     ],
-    "version": "0.3.0",
+    "version": "0.3.1",
     "repository": {
         "type": "git",
         "url": "http://github.com/nighca/iqiyi.git"

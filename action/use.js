@@ -3,7 +3,7 @@ var fs = require('fs');
 
 var myCli = require('../kit/cli');
 var config = require('../kit/config');
-var kit = require('../kit');
+var terminate = require('../kit/terminate');
 
 var action = function(root){
     var program = this;
@@ -20,7 +20,7 @@ var action = function(root){
                 .fail(root)
                 .fail('does not exist!')
                 .end();
-            kit.terminate();
+            terminate();
         }
         config({
             root: root
@@ -35,7 +35,7 @@ var action = function(root){
             .tell(root)
             .end();
 
-        kit.terminate();
+        terminate();
     };
 
     var promptRoot = function(){

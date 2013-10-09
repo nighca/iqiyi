@@ -1,8 +1,15 @@
 var path = require('path');
 
 var config = require('./config')();
+var output = require('./output');
+var terminate = require('./terminate');
 
 var root = config.root;
+
+if(!root){
+	output.noRootFault();
+	terminate();
+}
 
 var trunkFolder = '__trunk__';
 var trunkName = 'trunk';
