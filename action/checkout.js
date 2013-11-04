@@ -1,21 +1,22 @@
 var path = require('path');
 
 var myCli = require('../kit/cli');
+var fsplus = require('../kit/fsplus');
 var pathname = require('../kit/pathname');
 var kit = require('../kit');
 
 var checkoutRewriteRule = function(root, branch){
     var ruleFile = path.join(root, 'js', '.htaccess');
-    var jsHtaccessCnt = kit.readFile(pathname.jsHtaccess);
+    var jsHtaccessCnt = fsplus.readFile(pathname.jsHtaccess);
 
-    kit.writeFile(ruleFile, jsHtaccessCnt.replace(/__trunk__/g, branch));
+    fsplus.writeFile(ruleFile, jsHtaccessCnt.replace(/__trunk__/g, branch));
 };
 
 var addLocalRewriteRule = function(root, branch){
     var ruleFile = path.join(root, branch, '.htaccess');
-    var branchHtaccessCnt = kit.readFile(pathname.branchHtaccess);
+    var branchHtaccessCnt = fsplus.readFile(pathname.branchHtaccess);
 
-    kit.writeFile(ruleFile, branchHtaccessCnt);
+    fsplus.writeFile(ruleFile, branchHtaccessCnt);
 };
 
 var checkout = function(branch){

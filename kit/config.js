@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var pkg = require('../package.json');
 
+var fsplus = require('./fsplus');
 var myCli = require('./cli');
 
 var config;
@@ -12,15 +13,15 @@ var configFile = path.join(configFolder, 'config.json');
 
 var readConfig = function(){
     if(!fs.existsSync(commonConfigFolder)){
-        kit.mkDir(commonConfigFolder);
+        fsplus.mkDir(commonConfigFolder);
     }
 
     if(!fs.existsSync(configFolder)){
-        kit.mkDir(configFolder);
+        fsplus.mkDir(configFolder);
     }
 
     if(!fs.existsSync(configFile)){
-        fs.writeFileSync(configFile, '{}');
+        fs.writeFileSync(configFile, '{"root":"~/"}');
     }
 
     return JSON.parse(fs.readFileSync(configFile, {encoding:'utf8'}));
