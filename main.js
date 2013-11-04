@@ -4,7 +4,7 @@ var program = require('commander');
 var config = require('./kit/config');
 
 var completion = require('./kit/cmd').completion(
-    ['init', 'use', 'checkout', 'branch', 'status', 'update'],
+    ['init', 'use', 'checkout', 'branch', 'status', 'update', 'exec'],
     ['h', 'V'],
     ['help', 'version']
 );
@@ -64,7 +64,7 @@ for (var i = 0, l = cmds.length, cmd; i < l; i++) {
         .command(cmd.command)
         .description(cmd.description)
         .action(cmd.action.bind(program));
-};
+}
 
 program.parse(process.argv);
 
