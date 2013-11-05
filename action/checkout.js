@@ -4,6 +4,7 @@ var myCli = require('../kit/cli');
 var fsplus = require('../kit/fsplus');
 var pathname = require('../kit/pathname');
 var kit = require('../kit');
+var output = require('../kit/output');
 
 var checkoutRewriteRule = function(root, branch){
     var ruleFile = path.join(root, 'js', '.htaccess');

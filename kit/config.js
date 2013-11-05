@@ -50,6 +50,7 @@ var dealConfig = function(cfg){
     }
 
     if(cfg){
+        delete cfg.pkg;
         try{
             writeConfig(cfg);
         }catch(e){

@@ -1,5 +1,6 @@
 var myCli = require('../kit/cli');
 var kit = require('../kit');
+var output = require('../kit/output');
 
 var pathname = require('../kit/pathname');
 
