@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-var config = require('./kit/config');
+//var config = require('./kit/config');
+var pkg = require('./package.json');
 
 var completion = require('./kit/cmd').completion(
-    ['init', 'use', 'checkout', 'branch', 'status', 'update', 'exec'],
+    ['init', 'use', 'checkout', 'config', 'branch', 'status', 'update', 'exec', 'goto'],
     ['h', 'V'],
     ['help', 'version']
 );
@@ -13,17 +14,17 @@ if(completion){
     return completion;
 }
 
-program.version(config().pkg.version);
+program.version(pkg.version);
 
 var cmds = [
     {
         command: 'init [root]',
-        description: 'give a path & init it',
+        description: 'use a directory as root & init it',
         action: require('./action/init')
     },
     {
         command: 'use [root]',
-        description: 'use folder which already occurs',
+        description: 'use a directory as root',
         action: require('./action/use')
     },
     {
@@ -32,18 +33,23 @@ var cmds = [
         action: require('./action/checkout')
     },
     {
+        command: 'config [name] [value]',
+        description: 'set config',
+        action: require('./action/config')
+    },
+    {
         command: 'branch',
         description: 'show all branches',
         action: require('./action/branch')
     },
-    /*{
+    {
         command: 'goto',
-        description: 'goto the working directory',
+        description: 'open a new terminal @cbd (current branch directory)',
         action: require('./action/goto')
-    },*/
+    },
     {
         command: 'exec',
-        description: 'exec command @cwd',
+        description: 'exec command @cbd (current branch directory)',
         action: require('./action/exec')
     },
     {

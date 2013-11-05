@@ -3,6 +3,7 @@ var exec = require('child_process').exec;
 var myCli = require('../kit/cli');
 var config = require('../kit/config')();
 var kit = require('../kit');
+var output = require('../kit/output');
 
 var action = function(){
     var root = config.root;

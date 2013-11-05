@@ -5,7 +5,7 @@ var pathname = require('./pathname');
 var output = require('./output');
 var terminate = require('./terminate');
 
-exports.getBranchList = function(root){
+var getBranchList = function(root){
     var branchList = fsplus.readDir(pathname.branchPath);
     branchList.unshift(pathname.trunkName);
     
@@ -35,6 +35,9 @@ var getWorkingDirectory = function(root){
         path.join(root, pathname.branchFolder, currBranch, pathname.projectFolder);
 };
 
-exports.terminate = terminate;
-exports.getCurrBranch = getCurrBranch;
-exports.getWorkingDirectory = getWorkingDirectory;
+module.exports = {
+    getBranchList: getBranchList,
+    terminate: terminate,
+    getCurrBranch: getCurrBranch,
+    getWorkingDirectory: getWorkingDirectory
+};
