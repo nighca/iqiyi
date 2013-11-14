@@ -27,7 +27,7 @@ exports.writeFile = function(path, cnt){
     return ret;
 };
 
-exports.readDir = function(path, cnt){
+exports.readDir = function(path){
     try{
         var ret = fs.readdirSync(path);
     }catch(e){
@@ -38,7 +38,7 @@ exports.readDir = function(path, cnt){
     return ret;
 };
 
-exports.mkDir = function(path, cnt){
+exports.mkDir = function(path){
     try{
         var ret = fs.mkdirSync(path);
     }catch(e){
