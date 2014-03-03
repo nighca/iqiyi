@@ -11,6 +11,10 @@ var commonConfigFolder = path.join(process.env['HOME'], '.config');
 var configFolder = path.join(commonConfigFolder, pkg.name);
 var configFile = path.join(configFolder, 'config.json');
 
+var defaultConfig = {
+    root: '~/'
+};
+
 var readConfig = function(){
     if(!fs.existsSync(commonConfigFolder)){
         fsplus.mkDir(commonConfigFolder);
@@ -21,7 +25,7 @@ var readConfig = function(){
     }
 
     if(!fs.existsSync(configFile)){
-        fs.writeFileSync(configFile, '{"root":"~/"}');
+        fs.writeFileSync(configFile, JSON.stringify(defaultConfig));
     }
 
     return JSON.parse(fs.readFileSync(configFile, {encoding:'utf8'}));

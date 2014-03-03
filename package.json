@@ -2,7 +2,8 @@
     "description": "A CLI Tool for Front-end Develop in Iqiyi",
     "license": "BSD",
     "dependencies": {
-        "commander": "1.3.2"
+        "commander": "1.3.2",
+        "tmodjs": "0.1.1"
     },
     "author": "nighca",
     "main": "main.js",

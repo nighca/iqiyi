@@ -5,7 +5,7 @@ var program = require('commander');
 var pkg = require('./package.json');
 
 var completion = require('./kit/cmd').completion(
-    ['init', 'use', 'checkout', 'create', 'config', 'branch', 'status', 'update', 'exec', 'goto'],
+    ['init', 'use', 'checkout', 'template', 'create', 'config', 'branch', 'status', 'update', 'exec', 'goto'],
     ['h', 'V'],
     ['help', 'version']
 );
@@ -31,6 +31,11 @@ var cmds = [
         command: 'checkout [branch]',
         description: 'checkout to a branch',
         action: require('./action/checkout')
+    },
+    {
+        command: 'template [op] [path]',
+        description: 'operation of template',
+        action: require('./action/template')
     },
     {
         command: 'create [addr] [branch]',

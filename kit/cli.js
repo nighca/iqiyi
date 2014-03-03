@@ -43,6 +43,11 @@ var cli = {
         this.write.apply(this, arguments);
         this.end();
         return this;
+    },
+    printFail: function(){
+        this.fail.apply(this, arguments);
+        this.end();
+        return this;
     }
 };
 
